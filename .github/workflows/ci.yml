@@ -52,7 +52,9 @@ jobs:
     name: circuits (${{ matrix.build }})
     needs: hygiene
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    # Every suite proves real statements with their real grinds; on a hosted
+    # runner that is hours, so the job takes the runner's limit.
+    timeout-minutes: 360
     strategy:
       fail-fast: false
       matrix:
