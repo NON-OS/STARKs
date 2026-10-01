@@ -1,0 +1,10 @@
+/target
+**/*.rs.bk
+target/
+._*
+.DS_Store
+.lake/
+lake-manifest.json
+__pycache__/
+.zig-cache/
+zig-out/

@@ -1,0 +1,23 @@
+# NOX Shield. Private ETH and NOX on Ethereum, verified natively on L1 by a
+# transparent STARK. The workspace holds the STARK engine and the shield
+# circuits, recursion and emitters built on it.
+
+[workspace]
+resolver = "2"
+members = [
+    "nonos-stark",
+    "note_seal",
+    "nox_prover",
+    "nox_verify",
+    "nox_verify_wasm",
+    "stark_proofs",
+]
+
+# What a wallet links: the release build with whole-program optimisation, one
+# codegen unit and no unwinding, so the library is smaller and a panic, which
+# the prover is built never to reach, cannot cross into Swift or Kotlin.
+[profile.wallet]
+inherits = "release"
+lto = "fat"
+codegen-units = 1
+panic = "abort"

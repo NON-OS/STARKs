@@ -1,0 +1,6 @@
+# One compiler for every build of this tree, so two builds of the same commit
+# can give the same bytes. Change it deliberately, with the pinned proofs rerun.
+[toolchain]
+channel = "1.98.1"
+profile = "minimal"
+components = ["rustfmt", "clippy"]
