@@ -1,0 +1,135 @@
+# NONOS Operating System (AGPL-3.0-or-later)
+# Every push and pull request: the build, the circuits' suites in every
+# deployed build, the verifier against every pinned proof (native and wasm),
+# and the Lean core with nothing admitted.
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+  CARGO_INCREMENTAL: 0
+
+jobs:
+  hygiene:
+    name: one home per quantity
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      # Counted by constant name and never by value: several quantities in this
+      # tree are equal to seven, and a tool that grouped by value would invite
+      # someone to merge them.
+      - run: python3 ci/one_home.py --root .
+      # The Zig client pins the key hierarchy and the intent's offsets that the
+      # circuit emits.
+      - run: python3 ci/vector_agree.py --root .
+
+  build:
+    name: build
+    needs: hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo build --release --workspace --all-targets --features parallel
+
+  circuits:
+    name: circuits (${{ matrix.build }})
+    needs: hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        build: ["parallel fri8", "parallel not_before", "parallel claim"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test --release -p stark_proofs --features "${{ matrix.build }}" --lib
+      - run: cargo test --release -p nox_prover --features "${{ matrix.build }}"
+
+  engine:
+    name: engine
+    needs: hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test --release -p nonos-stark --features parallel
+
+  verifier:
+    name: verifier (native and wasm)
+    needs: hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Every pinned proof verifies, and each is refused with a word moved or
+      # a byte flipped.
+      - run: cargo test --release -p nox_verify
+      - run: cargo build --profile wallet -p nox_verify_wasm --target wasm32-unknown-unknown
+      - run: node nox_verify_wasm/js/check.mjs target/wasm32-unknown-unknown/wallet/nox_verify_wasm.wasm spec
+
+  client:
+    name: client (Zig)
+    needs: hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mlugg/setup-zig@v1
+        with:
+          version: 0.14.0
+      - run: zig build test --summary all
+        working-directory: ocean
+
+  lean:
+    name: lean
+    needs: hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      # elan reads lean/lean-toolchain and fetches the pinned compiler. The
+      # package has no dependencies, so lake needs no manifest and no cache.
+      - name: install elan
+        run: |
+          curl -sSfL https://github.com/leanprover/elan/releases/latest/download/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: build
+        working-directory: lean
+        # pipefail, or the pipeline reports tee's status and a failed build
+        # shows green.
+        run: |
+          set -o pipefail
+          lake build 2>&1 | tee build.log
+      # An admitted proof proves nothing, and an added axiom is an assumption
+      # nobody agreed to.
+      - name: nothing is admitted
+        working-directory: lean
+        run: |
+          ! grep -q "sorryAx" build.log
+          ! grep -rnE "^[^-]*\b(sorry|native_decide)\b|^axiom " . --include='*.lean'
