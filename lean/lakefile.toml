@@ -1,0 +1,9 @@
+name = "shield"
+defaultTargets = ["Shield"]
+
+[[lean_lib]]
+name = "Shield"
+
+[[lean_exe]]
+name = "shieldread"
+root = "ShieldRead"
