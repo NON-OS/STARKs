@@ -1,0 +1,33 @@
+[package]
+name = "nox_prover"
+version = "0.1.0"
+edition = "2021"
+license = "AGPL-3.0-or-later"
+description = "A NOX Shield spend proved on the user's device: browser, phone or desktop"
+
+[lib]
+crate-type = ["rlib", "cdylib", "staticlib"]
+
+[dependencies]
+stark_proofs = { path = "../stark_proofs" }
+wasm-bindgen = { version = "0.2", optional = true }
+wasm-bindgen-rayon = { version = "1.2", optional = true }
+
+[features]
+parallel = ["stark_proofs/parallel"]
+digest32 = ["stark_proofs/digest32"]
+radix8 = ["stark_proofs/radix8"]
+fri8 = ["stark_proofs/fri8", "radix8", "digest32"]
+not_before = ["stark_proofs/not_before", "fri8"]
+claim = ["stark_proofs/claim", "fri8"]
+# Transcript recording, for the transcript review trace only.
+kat = ["stark_proofs/kat"]
+wasm = ["dep:wasm-bindgen"]
+# A browser proving on every core: shared-memory wasm, built with
+# +atomics,+bulk-memory on nightly, served cross-origin isolated.
+wasm-threads = ["wasm", "parallel", "dep:wasm-bindgen-rayon"]
+
+# The activity statement exists on the format 7 transcript only.
+[[bin]]
+name = "emit_activity_vector"
+required-features = ["fri8"]
