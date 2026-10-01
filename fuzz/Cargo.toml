@@ -1,0 +1,30 @@
+[package]
+name = "starks-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+stark_proofs = { path = "../stark_proofs", features = ["fri8"] }
+
+# Its own workspace, so the fuzz build never touches the main one's lock or profile.
+[workspace]
+members = ["."]
+
+[[bin]]
+name = "parse_shared"
+path = "fuzz_targets/parse_shared.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "mutate_verify"
+path = "fuzz_targets/mutate_verify.rs"
+test = false
+doc = false
+bench = false
