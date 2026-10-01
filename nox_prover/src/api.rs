@@ -39,25 +39,33 @@ use stark_proofs::shield_params::direct;
 use stark_proofs::zk_rank::check_fri_rank;
 
 /// The periodic root of the radix-4, 24-byte-digest build: what a verifier of
-/// that build holds. A cache whose root is anything else is refused before use.
-#[cfg(not(feature = "digest32"))]
-pub const PERIODIC_ROOT: [u8; DIGEST_BYTES] = [
+/// that build holds.
+const ROOT_24: [u8; 24] = [
     0x76, 0x10, 0xe7, 0x59, 0x93, 0xc1, 0xde, 0x7b, 0x8d, 0xa0, 0x7a, 0x5c, 0xa6, 0x92, 0x0f, 0x0e,
     0x66, 0xcd, 0xb8, 0x8d, 0x6a, 0x43, 0x3e, 0x23,
 ];
 
-/// The circuit's periodic root (spec/transfer/MANIFEST.md): overlay, checkpoint
-/// rule, 32-byte digests, radix 8.
-#[cfg(all(feature = "digest32", feature = "fri8"))]
-pub const PERIODIC_ROOT: [u8; DIGEST_BYTES] = [
+/// The deployed circuit's periodic root (spec/transfer/MANIFEST.md): overlay,
+/// checkpoint rule, 32-byte digests, radix 8.
+const ROOT_32: [u8; 32] = [
     0x89, 0x8b, 0x80, 0x0f, 0x60, 0xf4, 0x67, 0xf0, 0x4a, 0xc9, 0x14, 0x0f, 0xb4, 0x25, 0xcd, 0x54,
     0x18, 0x1e, 0x4d, 0x16, 0x42, 0xf6, 0x1f, 0xc3, 0x8b, 0x59, 0x65, 0xd0, 0x8a, 0xce, 0x28, 0x88,
 ];
 
-/// 32-byte digests without the circuit is no shipped circuit: no cache has
-/// an all-zero root, so every cache is refused. Fail closed, not open.
-#[cfg(all(feature = "digest32", not(feature = "fri8")))]
-pub const PERIODIC_ROOT: [u8; DIGEST_BYTES] = [0u8; DIGEST_BYTES];
+/// The periodic root a cache must carry, chosen by the digest width the engine
+/// was built with, so a workspace build that unifies the engine's features
+/// still pins the root of the width it hashes at. A cache whose root is
+/// anything else is refused before use.
+pub const PERIODIC_ROOT: [u8; DIGEST_BYTES] = {
+    let src: &[u8] = if DIGEST_BYTES == 24 { &ROOT_24 } else { &ROOT_32 };
+    let mut out = [0u8; DIGEST_BYTES];
+    let mut i = 0;
+    while i < DIGEST_BYTES {
+        out[i] = src[i];
+        i += 1;
+    }
+    out
+};
 
 /// Why a proof was not made or not accepted. Every refusal is one of these;
 /// nothing in this crate panics on its input.

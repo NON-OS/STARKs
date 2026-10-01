@@ -13,7 +13,7 @@ const sets = [
   [STATEMENT.attestation, "attest", "proof.bin"],
   [STATEMENT.activity, "activity", "proof.bin"],
   [STATEMENT.activity, "wallet-vectors-activity", "proof.bin"],
-  [STATEMENT.transfer, "fri8", "proof.bin"],
+  [STATEMENT.transfer, "transfer", "proof.bin"],
   [STATEMENT.transferNotBefore, "not-before", "proof.bin"],
   [STATEMENT.claim, "claim", "proof.bin"],
   [STATEMENT.transferNotBefore, "wallet-vectors-not-before", "proof-format7.bin"],
