@@ -1,0 +1,8 @@
+{
+  "artifact": "wallet-vectors",
+  "vectors": [
+    {"name": "transfer-eth", "proof_keccak256": "4876549c1b419eb34a5bb93e17b2a453b5d0d42ab97dcd58b8efd8f235becc3a"},
+    {"name": "withdraw-eth", "proof_keccak256": "a6aea9313994662bf714fe2757a3cbc8a155e8fb2178362fca5f5f941b796f0b"},
+    {"name": "transfer-nox", "proof_keccak256": "d8935e9071989649cd3dd61ce20cea799c7feb59cbbc72e9f2cca3453e5559e3"}
+  ]
+}

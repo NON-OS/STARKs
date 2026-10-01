@@ -1,0 +1,16 @@
+{
+  "asset_id": 1,
+  "pool_leaves": ["0x681d1673e76299bea26684765b6c13572f8bcd981ff285dd56423aa5911e6061", "0x7166f90b793d499d8430cfc73f41c67d77b38be5c90b60aec449ad7f2fef41f9"],
+  "assoc_leaves": ["0x681d1673e76299bea26684765b6c13572f8bcd981ff285dd56423aa5911e6061", "0x7166f90b793d499d8430cfc73f41c67d77b38be5c90b60aec449ad7f2fef41f9"],
+  "input_pool_index": [0, 1],
+  "input_assoc_index": [0, 1],
+  "note_root": "0x696d311e6901cb42f49e54f8ba33415fb6194923c2f8eeb96c776e7c0ad39e12",
+  "assoc_root": "0x696d311e6901cb42f49e54f8ba33415fb6194923c2f8eeb96c776e7c0ad39e12",
+  "recipient": "0x0000000000000000000000000000000000000000",
+  "fee_recipient": "0x5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b",
+  "clearing_price": 0,
+  "public_amount": 0,
+  "fee": 100000,
+  "output_values": [5000000, 4900000],
+  "output_spend_pk": ["0x733bcca3d890f199af9f92bdf1cd5c2f4d8e8bb62eda460c053c1f925e2210c1", "self"]
+}
