@@ -1,0 +1,20 @@
+# NONOS Operating System
+# Copyright (C) 2026 NONOS Contributors
+#
+# The client-data format a settlement's OutputNote carries: a note's opening
+# sealed to its payee under the X-Wing hybrid KEM. Reference implementation
+# and test vectors for docs/17-client-data.md.
+[package]
+name = "note_seal"
+version = "0.1.0"
+edition = "2021"
+license = "AGPL-3.0-or-later"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+x-wing = { version = "=0.1.0", features = ["hazmat", "getrandom", "zeroize"] }
+chacha20poly1305 = { version = "=0.11.0", default-features = false, features = ["alloc"] }
+sha3 = "=0.12.0"
+getrandom = "0.3"
