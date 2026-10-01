@@ -1,0 +1,15 @@
+[package]
+name = "nox_verify_wasm"
+version = "0.1.0"
+edition = "2021"
+license = "AGPL-3.0-or-later"
+description = "nox_verify for a web page: four plain exports, no bindings toolchain"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+nox_verify = { path = "../nox_verify" }
+# Streaming BLAKE3 for measuring a downloaded image a chunk at a time. Already
+# in the lock as the engine's; the same crate the kernel measures with.
+blake3 = { version = "1.0", default-features = false }
