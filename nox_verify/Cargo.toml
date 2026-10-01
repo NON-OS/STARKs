@@ -1,0 +1,24 @@
+[package]
+name = "nox_verify"
+version = "0.1.0"
+edition = "2021"
+license = "AGPL-3.0-or-later"
+description = "Verify-only, no_std: a format 7 proof checked against a pinned circuit image"
+
+[lib]
+# The format 7 reader is included from `stark_proofs`, and its unit tests need
+# that crate's fixtures. This crate's tests are the integration tests in
+# `tests/`, which build the library as a gate links it.
+test = false
+
+[dependencies]
+# The engine without `parallel` is no_std + alloc. The format 7 transcript, radix 8
+# and 32-byte digests are the only build the pinned images exist for.
+nonos-stark = { path = "../nonos-stark", default-features = false, features = ["fri8"] }
+
+[features]
+# The format 7 reader is compiled from `stark_proofs/src/proof_wire`, whose
+# format and transcript choices are spelled `cfg(feature = "fri8")`. This crate
+# serves only that build, so the feature is always on.
+default = ["fri8"]
+fri8 = []
