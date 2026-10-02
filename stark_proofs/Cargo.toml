@@ -19,7 +19,11 @@ nonos-stark = { path = "../nonos-stark" }
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(kani)'] }
 
 [features]
-parallel = ["nonos-stark/parallel"]
+default = ["std"]
+# The host modules: files, clocks, threads and the request reader. Without it the
+# crate is no_std + alloc, the prove path the nonos.prove capsule runs.
+std = []
+parallel = ["std", "nonos-stark/parallel"]
 kat = ["nonos-stark/kat"]
 digest32 = ["nonos-stark/digest32"]
 radix8 = ["nonos-stark/radix8"]

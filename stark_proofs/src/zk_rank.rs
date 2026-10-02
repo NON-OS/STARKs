@@ -183,7 +183,7 @@ pub fn check_fri_rank(
     proof: &[u8],
     publics: &[u64],
     attempts: usize,
-) -> Result<RankReport, String> {
+) -> Result<RankReport, alloc::string::String> {
     check_at(proof, publics, attempts, None)
 }
 
@@ -195,7 +195,7 @@ pub(crate) fn check_at(
     publics: &[u64],
     attempts: usize,
     chosen: Option<Vec<usize>>,
-) -> Result<RankReport, String> {
+) -> Result<RankReport, alloc::string::String> {
     check_at_shape(
         proof,
         publics,
@@ -213,7 +213,7 @@ pub fn check_fri_rank_shape(
     attempts: usize,
     q: usize,
     grind: u32,
-) -> Result<RankReport, String> {
+) -> Result<RankReport, alloc::string::String> {
     check_at_shape(proof, publics, attempts, None, q, grind)
 }
 
@@ -224,7 +224,7 @@ fn check_at_shape(
     chosen: Option<Vec<usize>>,
     q: usize,
     grind: u32,
-) -> Result<RankReport, String> {
+) -> Result<RankReport, alloc::string::String> {
     if publics.iter().any(|&v| v >= P) {
         return Err("a public word is not below p".into());
     }
@@ -248,7 +248,7 @@ pub fn check_fri_rank_rounds(
     publics: &[Fp],
     extra: u32,
     attempts: usize,
-) -> Result<RankReport, String> {
+) -> Result<RankReport, alloc::string::String> {
     rank_of(&mut air, rounds, publics, extra, attempts, None)
 }
 
@@ -259,7 +259,7 @@ fn rank_of(
     extra: u32,
     attempts: usize,
     chosen: Option<Vec<usize>>,
-) -> Result<RankReport, String> {
+) -> Result<RankReport, alloc::string::String> {
     let replayed = replay_comp_z_pre(air, &rounds.pre, Some(&rounds.perm_root), extra, words)?;
 
     let (log_n, fri_log_blowup) = domain_params_blown(&*air, extra);
@@ -275,7 +275,7 @@ fn rank_of(
      * has written down. Pad such a circuit to the pool's length instead.
      */
     if layers < MIN_LAYERS {
-        return Err(format!(
+        return Err(alloc::format!(
             "the proof folds {layers} times; the certificate covers {MIN_LAYERS} or more, so pad the circuit"
         ));
     }

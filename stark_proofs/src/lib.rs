@@ -2,24 +2,31 @@
 //! Host-runnable proofs for the STARK verification primitives. Includes the
 //! real src/crypto source and checks it against its specification.
 
+#![cfg_attr(not(feature = "std"), no_std)]
+
 extern crate alloc;
 
 pub mod activity;
 pub mod attest;
 pub mod budget;
+#[cfg(feature = "std")]
 pub mod compose_pipeline;
 pub mod crypto;
 mod deployed;
+#[cfg(feature = "std")]
 pub mod host;
 pub mod lean_schedule;
 pub mod lean_text;
 pub mod proof_wire;
 pub mod recursion_assembly;
+#[cfg(feature = "std")]
 pub mod root_cache;
 pub mod shield;
 pub mod shield_params;
+#[cfg(feature = "std")]
 pub mod tree_cache;
 mod witness_satisfies;
+#[cfg(feature = "std")]
 pub mod wrap;
 pub mod zk_rank;
 

@@ -294,7 +294,7 @@ can move alone.
 | path | what it is |
 |---|---|
 | `nonos-stark/` | the engine: Goldilocks and F_p², NTT and LDE, DEEP-FRI, Merkle over Keccak and Poseidon, the AIR traits, provers and verifiers |
-| `stark_proofs/` | the circuits: notes, keys, join-split, nullifiers, attestation, activity; their audits, tamper tests and emitters in `src/bin` |
+| `stark_proofs/` | the circuits: notes, keys, join-split, nullifiers, attestation, activity; their audits, tamper tests and emitters in `src/bin`. Without its default `std` feature the prove path builds as `no_std` + `alloc`, for an operating system to prove in |
 | `nox_prover/` | what a wallet links: the prover behind a C, wasm and Rust interface, with progress and cancellation |
 | `nox_verify/` | the `no_std` verifier that reads a statement's program image; what a gate links |
 | `nox_verify_wasm/` | the same verifier as a browser module, with its JavaScript interface |

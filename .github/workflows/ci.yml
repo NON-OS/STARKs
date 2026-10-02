@@ -66,6 +66,23 @@ jobs:
       - run: cargo test --release -p stark_proofs --features "${{ matrix.build }}" --lib
       - run: cargo test --release -p nox_prover --features "${{ matrix.build }}"
 
+  no_std:
+    name: prove path without std
+    needs: hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      # A bare-metal target has no std at all, so anything that reaches for it
+      # fails here rather than in the kernel that links the prove path.
+      - run: rustup target add x86_64-unknown-none
+      - run: |
+          for f in fri8 not_before claim; do
+            cargo build --release -p stark_proofs --lib --no-default-features --features "$f" --target x86_64-unknown-none
+          done
+
   engine:
     name: engine
     needs: hygiene
