@@ -188,9 +188,14 @@ impl Options<'_> {
     }
 }
 
-/// A cache from bytes, refused unless its root is the launch circuit's.
+/// A cache from bytes, refused unless every stored level hashes up to the
+/// launch circuit's periodic root at the prover's cut. Any refusal is
+/// `Error::Cache`, so a wallet rebuilds rather than failing every proof.
 pub fn load_cache(bytes: &[u8]) -> Result<TreeTop, Error> {
     let top = TreeTop::from_bytes(bytes).ok_or_else(|| Error::Cache("malformed".into()))?;
+    if top.chunk() != 1usize << PERIODIC_CUT {
+        return Err(Error::Cache("its cut is not the prover's".into()));
+    }
     if top.root()[..DIGEST_BYTES] != PERIODIC_ROOT {
         return Err(Error::Cache(
             "its root is not the launch circuit's periodic root".into(),
